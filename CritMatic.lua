@@ -28,7 +28,7 @@ local function AddHighestHitsToTooltip(self, slot)
       local critDPS = CritMaticData[spellName].highestCrit / effectiveTime
       local normalDPS = CritMaticData[spellName].highestNormal / effectiveTime
 
-      -- Your code here to display tooltip for healing spells
+      -- Your code here to display tooltip for healing spells and damage
       local CritMaticHealLeft = "Highest Heal Crit: "
       local CritMaticHealRight = tostring(CritMaticData[spellName].highestHealCrit) .. " (" .. format("%.1f", critHPS) .. " HPS)"
       local normalMaticHealLeft = "Highest Heal Normal: "
@@ -63,6 +63,7 @@ local function AddHighestHitsToTooltip(self, slot)
           end
         end
       end
+
       if CritMaticData[spellName].highestHeal > 0 or CritMaticData[spellName].highestHealCrit > 0 then
         -- If lines don't exist, add them.
         if not critHealMaticExists then
@@ -119,9 +120,14 @@ f:SetScript("OnEvent", function(self, event)
     amount, overhealing, _, _, _, absorbed, critical = unpack(eventInfo, 15, 21)
   end
 
+  local baseSpellName = spellName
+  if spellName and string.sub(spellName, 1, 8) == "Improved" then
+    baseSpellName = string.sub(spellName, 10)  -- Stripping out "Improved " prefix
+  end
+
   if sourceGUID == UnitGUID("player") and destGUID ~= UnitGUID("player") and (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" or eventType == "SPELL_PERIODIC_DAMAGE") and amount > 0 then
     if spellName then
-      CritMaticData[spellName] = CritMaticData[spellName] or {
+      CritMaticData[baseSpellName] = CritMaticData[baseSpellName] or {
         highestCrit = 0,
         highestNormal = 0,
         highestHeal = 0,
@@ -133,50 +139,50 @@ f:SetScript("OnEvent", function(self, event)
 
       if eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" then
         if critical then
-          if spellName == "Auto Attack" then
+          if baseSpellName == "Auto Attack" then
             return
           end
           -- When the event is a heal and it's a critical heal.
-          if amount > CritMaticData[spellName].highestHealCrit then
-            CritMaticData[spellName].highestHealCrit = amount
+          if amount > CritMaticData[baseSpellName].highestHealCrit then
+            CritMaticData[baseSpellName].highestHealCrit = amount
             PlaySound(888, "SFX")
-            CritMatic.ShowNewHealCritMessage(spellName, amount)
-            print("New highest crit heal for " .. spellName .. ": " .. CritMaticData[spellName].highestHealCrit)
+            CritMatic.ShowNewHealCritMessage(baseSpellName, amount)
+            print("New highest crit heal for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestHealCrit)
           end
         elseif not critical then
           -- When the event is a heal but it's not a critical heal.
-          if spellName == "Auto Attack" then
+          if baseSpellName == "Auto Attack" then
             return
           end
-          if amount > CritMaticData[spellName].highestHeal then
-            CritMaticData[spellName].highestHeal = amount
+          if amount > CritMaticData[baseSpellName].highestHeal then
+            CritMaticData[baseSpellName].highestHeal = amount
             PlaySound(10049, "SFX")
-            CritMatic.ShowNewHealMessage(spellName, amount)
-            print("New highest normal heal for " .. spellName .. ": " .. CritMaticData[spellName].highestHeal)
+            CritMatic.ShowNewHealMessage(baseSpellName, amount)
+            print("New highest normal heal for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestHeal)
           end
         end
       elseif eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "SPELL_PERIODIC_DAMAGE" then
         if critical then
           -- When the event is damage and it's a critical hit.
-          if spellName == "Auto Attack" then
+          if baseSpellName == "Auto Attack" then
             return
           end
-          if amount > CritMaticData[spellName].highestCrit then
-            CritMaticData[spellName].highestCrit = amount
+          if amount > CritMaticData[baseSpellName].highestCrit then
+            CritMaticData[baseSpellName].highestCrit = amount
             PlaySound(888, "SFX")
-            CritMatic.ShowNewCritMessage(spellName, amount)
-            print("New highest crit hit for " .. spellName .. ": " .. CritMaticData[spellName].highestCrit)
+            CritMatic.ShowNewCritMessage(baseSpellName, amount)
+            print("New highest crit hit for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestCrit)
           end
         elseif not critical then
           -- When the event is damage but it's not a critical hit.
-          if spellName == "Auto Attack" then
+          if baseSpellName == "Auto Attack" then
             return
           end
-          if amount > CritMaticData[spellName].highestNormal then
-            CritMaticData[spellName].highestNormal = amount
+          if amount > CritMaticData[baseSpellName].highestNormal then
+            CritMaticData[baseSpellName].highestNormal = amount
             PlaySound(10049, "SFX")
-            CritMatic.ShowNewNormalMessage(spellName, amount)
-            print("New highest normal hit for " .. spellName .. ": " .. CritMaticData[spellName].highestNormal)
+            CritMatic.ShowNewNormalMessage(baseSpellName, amount)
+            print("New highest normal hit for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestNormal)
           end
         end
       end
