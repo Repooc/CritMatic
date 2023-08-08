@@ -18,6 +18,6 @@ CritMatic is a lightweight World of Warcraft addon designed to help players keep
 
 - **Persistent Data:** CritMatic saves your highest hits data between sessions, so you can log out or switch characters without losing your records. You can also reset the data at any time if you want to start fresh.
 
-- **Slash Command:** Use the `/cmreset` command to reset all your saved data. This can be useful if you want to start tracking from scratch or if you've made significant changes to your character's gear or abilities.
+- **Slash Command:** Use the `/cmreset` command to reset all your saved data. This can be useful if you want to start tracking from scratch.
 
-With CritMatic, you'll have a better understanding of your character's capabilities, and you'll always know when you've hit a new personal best. Happy Criting!
+With CritMatic you'll always know when you've hit a new personal best. Happy Criting!
