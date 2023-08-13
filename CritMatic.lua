@@ -1,6 +1,5 @@
 -- Define a table to hold the highest hits data.
 CritMaticData = CritMaticData or {}
-
 local function GetGCD()
   local _, gcdDuration = GetSpellCooldown(78) -- 78 is the spell ID for Warrior's Heroic Strike
   if gcdDuration == 0 then
@@ -9,30 +8,40 @@ local function GetGCD()
     return gcdDuration
   end
 end
--- Hook into the game tooltip's OnTooltipSetSpell event
+
+local KILLING_SPREE_DURATION = 2.0  -- duration in seconds
+
+local addedKillingSpreeInfo = false
+
 GameTooltip:HookScript("OnTooltipSetSpell", function(self)
-  -- Get the spell's information from the tooltip
   local name, spellID = self:GetSpell()
+  if spellID == 51690 and not addedKillingSpreeInfo then  -- "Killing Spree"
+    C_Timer.After(0.01, function()
+      local critDPS = CritMaticData["Killing Spree"].highestCrit / KILLING_SPREE_DURATION
+      local normalDPS = CritMaticData["Killing Spree"].highestNormal / KILLING_SPREE_DURATION
 
-  -- Check if the spell is "Killing Spree"
-  if name == "Killing Spree" then
-    -- Get the texture ID for the spell
-    local textureID = GetSpellTexture(spellID)
+      local critMaticLeft = "Highest Crit: "
+      local critMaticRight = tostring(CritMaticData["Killing Spree"].highestCrit) .. " (" .. format("%.1f", critDPS) .. " DPS)"
 
-    -- Add a line to the tooltip displaying the texture ID
-    self:AddLine(tostring(CritMaticData["Killing Spree"].highestCrit))
-    self:AddLine(tostring(CritMaticData["Killing Spree"].highestNormal))
-    if name == "Killing Spree" then
-      local killCritMaticLine = "Highest Crit: " .. tostring(CritMaticData["Killing Spree"].highestCrit) .. " (" .. format("%.1f", 0) .. " DPS)"
-      local killNormalMaticLine = "Highest Normal: " .. tostring(CritMaticData["Killing Spree"].highestNormal) .. " (" .. format("%.1f", 0) .. " DPS)"
+      local normalMaticLeft = "Highest Normal: "
+      local normalMaticRight = tostring(CritMaticData["Killing Spree"].highestNormal) .. " (" .. format("%.1f", normalDPS) .. " DPS)"
 
-      self:AddLine(killCritMaticLine, 1, 1, 1) -- White color
-      self:AddLine(killNormalMaticLine, 1, 0.82, 0) -- Gold color
+      self:AddDoubleLine(critMaticLeft, critMaticRight, 1, 1, 1, 1, 0.82, 0)  -- Left text in white, Right text in gold
+      self:AddDoubleLine(normalMaticLeft, normalMaticRight, 1, 1, 1, 1, 0.82, 0)  -- Left text in white, Right text in gold
+      self:Show()  -- Redraw the tooltip to reflect our changes
 
-    end
-    self:Show()  -- Update the tooltip to show the added line
+      addedKillingSpreeInfo = true
+    end)
   end
 end)
+
+-- Reset the flag when the tooltip is hidden, so the next time it's shown, we can add our info again
+GameTooltip:HookScript("OnHide", function(self)
+  addedKillingSpreeInfo = false
+end)
+
+
+
 
 local function AddHighestHitsToTooltip(self, slot)
   if (not slot) then
@@ -53,8 +62,6 @@ local function AddHighestHitsToTooltip(self, slot)
       local normalHPS = CritMaticData[spellName].highestHeal / effectiveTime
       local critDPS = CritMaticData[spellName].highestCrit / effectiveTime
       local normalDPS = CritMaticData[spellName].highestNormal / effectiveTime
-      local killCritDPS = CritMaticData["Killing Spree"].highestCrit / effectiveTime
-      local killNormalDPS = CritMaticData["Killing Spree"].highestNormal / effectiveTime
 
       -- tooltip for healing spells and damage
       local CritMaticHealLeft = "Highest Heal Crit: "
@@ -91,37 +98,36 @@ local function AddHighestHitsToTooltip(self, slot)
           end
         end
       end
-
+      -- If lines don't exist, add them.
+      -- This is a healing spell
       if CritMaticData[spellName].highestHeal > 0 or CritMaticData[spellName].highestHealCrit > 0 then
-        -- If lines don't exist, add them.
+
         if not critMaticHealExists then
           self:AddDoubleLine(CritMaticHealLeft, CritMaticHealRight)
           _G["GameTooltipTextLeft" .. self:NumLines()]:SetTextColor(1, 1, 1) -- left side color (white)
-          _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (white)
+          _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (gold)
         end
 
         if not normalMaticHealExists then
           self:AddDoubleLine(normalMaticHealLeft, normalMaticHealRight)
           _G["GameTooltipTextLeft" .. self:NumLines()]:SetTextColor(1, 1, 1) -- left side color (white)
-          _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (white)
+          _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (gold)
         end
       end
 
-      --if CritMaticData[spellName].highestNormal > 0 or CritMaticData[spellName].highestCrit > 0 or CritMaticData["Killing Spree"].highestCrit > 0 or CritMaticData["Killing Spree"].highestNormal > 0 then
       if CritMaticData[spellName].highestNormal > 0 or CritMaticData[spellName].highestCrit > 0 then
         -- This is a damaging spell
         if not critMaticExists then
           self:AddDoubleLine(CritMaticLeft, CritMaticRight)
           _G["GameTooltipTextLeft" .. self:NumLines()]:SetTextColor(1, 1, 1) -- left side color (white)
-          _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (white)
+          _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (gold)
         end
         if not normalMaticExists then
           self:AddDoubleLine(normalMaticLeft, normalMaticRight)
           _G["GameTooltipTextLeft" .. self:NumLines()]:SetTextColor(1, 1, 1) -- left side color (white)
-          _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (white)
+          _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (gold)
         end
       end
-
 
       self:Show()
     end
