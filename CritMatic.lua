@@ -9,6 +9,30 @@ local function GetGCD()
     return gcdDuration
   end
 end
+-- Hook into the game tooltip's OnTooltipSetSpell event
+GameTooltip:HookScript("OnTooltipSetSpell", function(self)
+  -- Get the spell's information from the tooltip
+  local name, spellID = self:GetSpell()
+
+  -- Check if the spell is "Killing Spree"
+  if name == "Killing Spree" then
+    -- Get the texture ID for the spell
+    local textureID = GetSpellTexture(spellID)
+
+    -- Add a line to the tooltip displaying the texture ID
+    self:AddLine(tostring(CritMaticData["Killing Spree"].highestCrit))
+    self:AddLine(tostring(CritMaticData["Killing Spree"].highestNormal))
+    if name == "Killing Spree" then
+      local killCritMaticLine = "Highest Crit: " .. tostring(CritMaticData["Killing Spree"].highestCrit) .. " (" .. format("%.1f", 0) .. " DPS)"
+      local killNormalMaticLine = "Highest Normal: " .. tostring(CritMaticData["Killing Spree"].highestNormal) .. " (" .. format("%.1f", 0) .. " DPS)"
+
+      self:AddLine(killCritMaticLine, 1, 1, 1) -- White color
+      self:AddLine(killNormalMaticLine, 1, 0.82, 0) -- Gold color
+
+    end
+    self:Show()  -- Update the tooltip to show the added line
+  end
+end)
 
 local function AddHighestHitsToTooltip(self, slot)
   if (not slot) then
@@ -29,6 +53,8 @@ local function AddHighestHitsToTooltip(self, slot)
       local normalHPS = CritMaticData[spellName].highestHeal / effectiveTime
       local critDPS = CritMaticData[spellName].highestCrit / effectiveTime
       local normalDPS = CritMaticData[spellName].highestNormal / effectiveTime
+      local killCritDPS = CritMaticData["Killing Spree"].highestCrit / effectiveTime
+      local killNormalDPS = CritMaticData["Killing Spree"].highestNormal / effectiveTime
 
       -- tooltip for healing spells and damage
       local CritMaticHealLeft = "Highest Heal Crit: "
@@ -96,12 +122,11 @@ local function AddHighestHitsToTooltip(self, slot)
         end
       end
 
-    end
 
-    self:Show()
+      self:Show()
+    end
   end
 end
-
 
 -- Register an event that fires when the player hits an enemy.
 local f = CreateFrame("FRAME")
@@ -154,8 +179,8 @@ f:SetScript("OnEvent", function(self, event, ...)
           highestNormal = 0,
           highestHeal = 0,
           highestHealCrit = 0,
-         -- spellIcon = baseSpellName == "Killing Spree" and GetSpellTexture(57842) or GetSpellTexture(spellID)
-          spellIcon = GetSpellTexture(spellID)
+          -- spellIcon = baseSpellName == "Killing Spree" and GetSpellTexture(57842) or GetSpellTexture(spellID)
+          spellIcon = GetSpellTexture(spellID) == 132345 and 236377 or GetSpellTexture(spellID)
         }
 
         --print(CombatLogGetCurrentEventInfo())
