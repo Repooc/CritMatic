@@ -116,9 +116,8 @@ local function AddHighestHitsToTooltip(self, slot)
           _G["GameTooltipTextRight" .. self:NumLines()]:SetTextColor(1, 0.82, 0) -- right side color (gold)
         end
       end
-
+      -- This is a damaging spell
       if CritMaticData[spellName].highestNormal > 0 or CritMaticData[spellName].highestCrit > 0 then
-        -- This is a damaging spell
         if not critMaticExists then
           self:AddDoubleLine(CritMaticLeft, CritMaticRight)
           _G["GameTooltipTextLeft" .. self:NumLines()]:SetTextColor(1, 1, 1) -- left side color (white)
