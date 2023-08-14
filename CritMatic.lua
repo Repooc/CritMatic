@@ -189,13 +189,10 @@ f:SetScript("OnEvent", function(self, event, ...)
           highestNormal = 0,
           highestHeal = 0,
           highestHealCrit = 0,
-          -- spellIcon = baseSpellName == "Killing Spree" and GetSpellTexture(57842) or GetSpellTexture(spellID)
           spellIcon = GetSpellTexture(spellID)
         }
-
         --print(CombatLogGetCurrentEventInfo())
 
-        --print("Spell Name: ".. spellName .. GetSpellTexture(spellID))
         if isKillingSpreeActive and baseSpellName == "Killing Spree" then
           if critical then
             killingSpreeCritDamage = killingSpreeCritDamage + amount
@@ -247,7 +244,6 @@ f:SetScript("OnEvent", function(self, event, ...)
               print("New highest crit heal for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestHealCrit)
             end
           elseif not critical then
-            -- When the event is a heal but it's not a critical heal.
             if baseSpellName == "Auto Attack" then
               return
             end
