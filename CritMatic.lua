@@ -14,8 +14,13 @@ local KILLING_SPREE_DURATION = 2.0  -- duration in seconds
 local addedKillingSpreeInfo = false
 
 GameTooltip:HookScript("OnTooltipSetSpell", function(self)
+  -- Check if the current frame under the mouse is the GameTooltip
+  local currentFrame = GetMouseFocus()
+  if currentFrame == GameTooltip then
+    return
+  end
   local name, spellID = self:GetSpell()
-  if spellID == 51690 and not addedKillingSpreeInfo then  -- "Killing Spree"
+  if spellID == 51690 and not addedKillingSpreeInfo then
     C_Timer.After(0.01, function()
       local critDPS = CritMaticData["Killing Spree"].highestCrit / KILLING_SPREE_DURATION
       local normalDPS = CritMaticData["Killing Spree"].highestNormal / KILLING_SPREE_DURATION
@@ -39,9 +44,6 @@ end)
 GameTooltip:HookScript("OnHide", function(self)
   addedKillingSpreeInfo = false
 end)
-
-
-
 
 local function AddHighestHitsToTooltip(self, slot)
   if (not slot) then
@@ -140,6 +142,7 @@ f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 f:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
 local isKillingSpreeActive = false
+local killingSpreeProcessing = false
 local killingSpreeDamage = 0
 local killingSpreeCritDamage = 0
 local killingSpreeCount = 0  -- Get information about the combat event.
@@ -173,9 +176,10 @@ f:SetScript("OnEvent", function(self, event, ...)
       amount, overhealing, _, _, _, absorbed, critical = unpack(eventInfo, 15, 21)
     end
 
+    -- Stripping out "Improved " prefix
     local baseSpellName = spellName
     if spellName and string.sub(spellName, 1, 8) == "Improved" then
-      baseSpellName = string.sub(spellName, 10)  -- Stripping out "Improved " prefix
+      baseSpellName = string.sub(spellName, 10)
     end
 
     if sourceGUID == UnitGUID("player") and destGUID ~= UnitGUID("player") and (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" or eventType == "SPELL_PERIODIC_DAMAGE") and amount > 0 then
@@ -186,52 +190,50 @@ f:SetScript("OnEvent", function(self, event, ...)
           highestHeal = 0,
           highestHealCrit = 0,
           -- spellIcon = baseSpellName == "Killing Spree" and GetSpellTexture(57842) or GetSpellTexture(spellID)
-          spellIcon = GetSpellTexture(spellID) == 132345 and 236377 or GetSpellTexture(spellID)
+          spellIcon = GetSpellTexture(spellID)
         }
 
         --print(CombatLogGetCurrentEventInfo())
 
         --print("Spell Name: ".. spellName .. GetSpellTexture(spellID))
         if isKillingSpreeActive and baseSpellName == "Killing Spree" then
-          print("[Debug] Killing Spree attack detected. Damage:", amount)  -- Debug: Damage of the current attack
           if critical then
-            print("[Debug] This attack was a critical hit!")  -- Debug: Indicate if the attack was a critical hit
             killingSpreeCritDamage = killingSpreeCritDamage + amount
             killingSpreeCritCount = killingSpreeCritCount + 1
           else
             killingSpreeDamage = killingSpreeDamage + amount
           end
           killingSpreeCount = killingSpreeCount + 1
-          print("[Debug] Attack count so far:", killingSpreeCount)  -- Debug: Track the number of attacks
-          if killingSpreeCount >= 5 then
-            print("[Debug] Killing Spree ended. Total Damage:", killingSpreeDamage, "Total Crit Damage:", killingSpreeCritDamage)  -- Debug: Total damage and crit damage after 5 attacks
+
+          if killingSpreeCount >= 5 and not killingSpreeProcessing then
             isKillingSpreeActive = false
-
-            if killingSpreeCritCount > 0 then
-
-              if killingSpreeCritDamage + killingSpreeDamage > CritMaticData[baseSpellName].highestCrit then
-                print("[Debug] New highest critical damage recorded for Killing Spree:", killingSpreeCritDamage)  -- Debug: New highest critical damage
-                CritMaticData["Killing Spree"].highestCrit = killingSpreeCritDamage + killingSpreeDamage
-                PlaySound(888, "SFX")
-                CritMatic.ShowNewCritMessage(baseSpellName, killingSpreeCritDamage + killingSpreeDamage)
-                print("New highest crit hit for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestCrit)
-                --print(" crit saved! " .. baseSpellName .. ": " .. CritMaticData[spellName].highestCrit)
+            killingSpreeProcessing = true  -- Set the flag to true to prevent re-scheduling
+            -- Delay of 1.7 seconds to ensure all attacks are processed
+            C_Timer.After(1.7, function()
+              if killingSpreeCritCount > 0 then
+                if killingSpreeCritDamage + killingSpreeDamage > CritMaticData[baseSpellName].highestCrit then
+                  CritMaticData["Killing Spree"].highestCrit = killingSpreeCritDamage + killingSpreeDamage
+                  PlaySound(888, "SFX")
+                  CritMatic.ShowNewCritMessage(baseSpellName, killingSpreeCritDamage + killingSpreeDamage)
+                  print("New highest crit hit for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestCrit)
+                end
+              else
+                if killingSpreeDamage > CritMaticData[baseSpellName].highestNormal then
+                  CritMaticData["Killing Spree"].highestNormal = killingSpreeDamage
+                  PlaySound(10049, "SFX")
+                  CritMatic.ShowNewNormalMessage(baseSpellName, killingSpreeDamage)
+                  print("New highest normal hit for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestNormal)
+                end
               end
-            else
-              if killingSpreeDamage > CritMaticData[baseSpellName].highestNormal then
-                print("[Debug] New highest normal damage recorded for Killing Spree:", killingSpreeDamage)  -- Debug: New highest normal damage
-                CritMaticData["Killing Spree"].highestNormal = killingSpreeDamage
-                PlaySound(10049, "SFX")
-                CritMatic.ShowNewNormalMessage(baseSpellName, killingSpreeDamage)
-                print("New highest normal hit for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestNormal)
-                --print("normal saved " .. baseSpellName .. ": " .. CritMaticData[spellName].highestNormal)
-              end
-            end
-            killingSpreeCount = 0
-            killingSpreeDamage = 0
-            killingSpreeCritDamage = 0
-            killingSpreeCritCount = 0
+              -- Reset counters and flags
+              killingSpreeProcessing = false
+              killingSpreeCount = 0
+              killingSpreeDamage = 0
+              killingSpreeCritDamage = 0
+              killingSpreeCritCount = 0
+            end)
           end
+
         elseif eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" then
           if critical then
             if baseSpellName == "Auto Attack" then
