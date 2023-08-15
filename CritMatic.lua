@@ -9,40 +9,27 @@ local function GetGCD()
   end
 end
 
-local KILLING_SPREE_DURATION = 2.0  -- duration in seconds
-
-local addedKillingSpreeInfo = false
-
-GameTooltip:HookScript("OnTooltipSetSpell", function(self)
-  -- Check if the current frame under the mouse is the GameTooltip
-  local currentFrame = GetMouseFocus()
-  if currentFrame == GameTooltip then
-    return
-  end
-  local name, spellID = self:GetSpell()
-  if spellID == 51690 and not addedKillingSpreeInfo then
-    C_Timer.After(0.01, function()
+-- Hook to modify the tooltip when hovering over action buttons
+hooksecurefunc(GameTooltip, "SetAction", function(self)
+  local actionType, id = GetActionInfo(self:GetOwner():GetID())
+  if actionType == "spell" then
+    local spellName = GetSpellInfo(id)
+    if spellName == "Killing Spree" then
+      local KILLING_SPREE_DURATION = 0.1
       local critDPS = CritMaticData["Killing Spree"].highestCrit / KILLING_SPREE_DURATION
       local normalDPS = CritMaticData["Killing Spree"].highestNormal / KILLING_SPREE_DURATION
-
+      print(critDPS)
+      print(normalDPS)
       local critMaticLeft = "Highest Crit: "
       local critMaticRight = tostring(CritMaticData["Killing Spree"].highestCrit) .. " (" .. format("%.1f", critDPS) .. " DPS)"
-
       local normalMaticLeft = "Highest Normal: "
       local normalMaticRight = tostring(CritMaticData["Killing Spree"].highestNormal) .. " (" .. format("%.1f", normalDPS) .. " DPS)"
 
       self:AddDoubleLine(critMaticLeft, critMaticRight, 1, 1, 1, 1, 0.82, 0)  -- Left text in white, Right text in gold
       self:AddDoubleLine(normalMaticLeft, normalMaticRight, 1, 1, 1, 1, 0.82, 0)  -- Left text in white, Right text in gold
-      self:Show()  -- Redraw the tooltip to reflect our changes
-
-      addedKillingSpreeInfo = true
-    end)
+      self:Show()
+    end
   end
-end)
-
--- Reset the flag when the tooltip is hidden, so the next time it's shown, we can add our info again
-GameTooltip:HookScript("OnHide", function(self)
-  addedKillingSpreeInfo = false
 end)
 
 local function AddHighestHitsToTooltip(self, slot)
@@ -62,8 +49,15 @@ local function AddHighestHitsToTooltip(self, slot)
 
       local critHPS = CritMaticData[spellName].highestHealCrit / effectiveTime
       local normalHPS = CritMaticData[spellName].highestHeal / effectiveTime
-      local critDPS = CritMaticData[spellName].highestCrit / effectiveTime
-      local normalDPS = CritMaticData[spellName].highestNormal / effectiveTime
+      local critDPS, normalDPS
+
+      if spellName == "Killing Spree" then
+         critDPS = CritMaticData[spellName].highestCrit / 2.0
+         normalDPS = CritMaticData[spellName].highestNormal / 2.0
+      else
+         critDPS = CritMaticData[spellName].highestCrit / effectiveTime
+         normalDPS = CritMaticData[spellName].highestNormal / effectiveTime
+      end
 
       -- tooltip for healing spells and damage
       local CritMaticHealLeft = "Highest Heal Crit: "
