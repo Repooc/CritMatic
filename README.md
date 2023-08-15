@@ -21,7 +21,7 @@ CritMatic is a lightweight World of Warcraft addon designed to help players keep
 With CritMatic you'll always know when you've hit a new personal best. Happy Criting!
 
 ## Planned:
-- Configuration options for more fonts, colors and animations.
+- Configuration options for more fonts, colors and animations and more.
 ## Change Log:
 
 ### [v0.1.1-alpha] - 8/14/2023
