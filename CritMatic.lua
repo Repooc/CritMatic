@@ -176,7 +176,6 @@ f:SetScript("OnEvent", function(self, event, ...)
     end
 
     if sourceGUID == UnitGUID("player") and destGUID ~= UnitGUID("player") and (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" or eventType == "SPELL_PERIODIC_DAMAGE") and amount > 0 then
-      --TODO: Make a setting to set a max Crit Or Normal hit so you don't have to see 1.5M crits on a 10M boss.
       if spellName then
         CritMaticData[baseSpellName] = CritMaticData[baseSpellName] or {
           highestCrit = 0,
