@@ -9,29 +9,6 @@ local function GetGCD()
   end
 end
 
--- Hook to modify the tooltip when hovering over action buttons
-hooksecurefunc(GameTooltip, "SetAction", function(self)
-  local actionType, id = GetActionInfo(self:GetOwner():GetID())
-  if actionType == "spell" then
-    local spellName = GetSpellInfo(id)
-    if spellName == "Killing Spree" then
-      local KILLING_SPREE_DURATION = 0.1
-      local critDPS = CritMaticData["Killing Spree"].highestCrit / KILLING_SPREE_DURATION
-      local normalDPS = CritMaticData["Killing Spree"].highestNormal / KILLING_SPREE_DURATION
-      print(critDPS)
-      print(normalDPS)
-      local critMaticLeft = "Highest Crit: "
-      local critMaticRight = tostring(CritMaticData["Killing Spree"].highestCrit) .. " (" .. format("%.1f", critDPS) .. " DPS)"
-      local normalMaticLeft = "Highest Normal: "
-      local normalMaticRight = tostring(CritMaticData["Killing Spree"].highestNormal) .. " (" .. format("%.1f", normalDPS) .. " DPS)"
-
-      self:AddDoubleLine(critMaticLeft, critMaticRight, 1, 1, 1, 1, 0.82, 0)  -- Left text in white, Right text in gold
-      self:AddDoubleLine(normalMaticLeft, normalMaticRight, 1, 1, 1, 1, 0.82, 0)  -- Left text in white, Right text in gold
-      self:Show()
-    end
-  end
-end)
-
 local function AddHighestHitsToTooltip(self, slot)
   if (not slot) then
     return
@@ -176,6 +153,7 @@ f:SetScript("OnEvent", function(self, event, ...)
     end
 
     if sourceGUID == UnitGUID("player") and destGUID ~= UnitGUID("player") and (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" or eventType == "SPELL_PERIODIC_DAMAGE") and amount > 0 then
+      --TODO: Make a setting to set a max Crit Or Normal hit so you don't have to see 1.5M crits on a 10M boss.
       if spellName then
         CritMaticData[baseSpellName] = CritMaticData[baseSpellName] or {
           highestCrit = 0,
