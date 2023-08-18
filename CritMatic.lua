@@ -1,5 +1,8 @@
 -- Define a table to hold the highest hits data.
 CritMaticData = CritMaticData or {}
+
+local MAX_HIT = 10000
+
 local function GetGCD()
   local _, gcdDuration = GetSpellCooldown(78) -- 78 is the spell ID for Warrior's Heroic Strike
   if gcdDuration == 0 then
@@ -8,29 +11,6 @@ local function GetGCD()
     return gcdDuration
   end
 end
-
--- Hook to modify the tooltip when hovering over action buttons
-hooksecurefunc(GameTooltip, "SetAction", function(self)
-  local actionType, id = GetActionInfo(self:GetOwner():GetID())
-  if actionType == "spell" then
-    local spellName = GetSpellInfo(id)
-    if spellName == "Killing Spree" then
-      local KILLING_SPREE_DURATION = 0.1
-      local critDPS = CritMaticData["Killing Spree"].highestCrit / KILLING_SPREE_DURATION
-      local normalDPS = CritMaticData["Killing Spree"].highestNormal / KILLING_SPREE_DURATION
-      print(critDPS)
-      print(normalDPS)
-      local critMaticLeft = "Highest Crit: "
-      local critMaticRight = tostring(CritMaticData["Killing Spree"].highestCrit) .. " (" .. format("%.1f", critDPS) .. " DPS)"
-      local normalMaticLeft = "Highest Normal: "
-      local normalMaticRight = tostring(CritMaticData["Killing Spree"].highestNormal) .. " (" .. format("%.1f", normalDPS) .. " DPS)"
-
-      self:AddDoubleLine(critMaticLeft, critMaticRight, 1, 1, 1, 1, 0.82, 0)  -- Left text in white, Right text in gold
-      self:AddDoubleLine(normalMaticLeft, normalMaticRight, 1, 1, 1, 1, 0.82, 0)  -- Left text in white, Right text in gold
-      self:Show()
-    end
-  end
-end)
 
 local function AddHighestHitsToTooltip(self, slot)
   if (not slot) then
@@ -176,6 +156,7 @@ f:SetScript("OnEvent", function(self, event, ...)
     end
 
     if sourceGUID == UnitGUID("player") and destGUID ~= UnitGUID("player") and (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" or eventType == "SPELL_PERIODIC_DAMAGE") and amount > 0 then
+
       if spellName then
         CritMaticData[baseSpellName] = CritMaticData[baseSpellName] or {
           highestCrit = 0,
@@ -230,7 +211,7 @@ f:SetScript("OnEvent", function(self, event, ...)
               return
             end
             -- When the event is a heal and it's a critical heal.
-            if amount > CritMaticData[baseSpellName].highestHealCrit then
+            if amount > CritMaticData[baseSpellName].highestHealCrit and amount <= MAX_HIT then
               CritMaticData[baseSpellName].highestHealCrit = amount
               PlaySound(888, "SFX")
               CritMatic.ShowNewHealCritMessage(baseSpellName, amount)
@@ -240,7 +221,7 @@ f:SetScript("OnEvent", function(self, event, ...)
             if baseSpellName == "Auto Attack" then
               return
             end
-            if amount > CritMaticData[baseSpellName].highestHeal then
+            if amount > CritMaticData[baseSpellName].highestHeal and amount <= MAX_HIT then
               CritMaticData[baseSpellName].highestHeal = amount
               PlaySound(10049, "SFX")
               CritMatic.ShowNewHealMessage(baseSpellName, amount)
@@ -253,7 +234,7 @@ f:SetScript("OnEvent", function(self, event, ...)
             if baseSpellName == "Auto Attack" or baseSpellName == "Killing Spree" then
               return
             end
-            if amount > CritMaticData[baseSpellName].highestCrit then
+            if amount > CritMaticData[baseSpellName].highestCrit and amount <= MAX_HIT then
               CritMaticData[baseSpellName].highestCrit = amount
               PlaySound(888, "SFX")
               CritMatic.ShowNewCritMessage(baseSpellName, amount)
@@ -264,7 +245,7 @@ f:SetScript("OnEvent", function(self, event, ...)
             if baseSpellName == "Auto Attack" or baseSpellName == "Killing Spree" then
               return
             end
-            if amount > CritMaticData[baseSpellName].highestNormal then
+            if amount > CritMaticData[baseSpellName].highestNormal and amount <= MAX_HIT then
               CritMaticData[baseSpellName].highestNormal = amount
               PlaySound(10049, "SFX")
               CritMatic.ShowNewNormalMessage(baseSpellName, amount)
