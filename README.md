@@ -37,7 +37,7 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 
 #### Added
 
-- Added a max for crits,heala and normal hits so on some bosses you don't get a 1 million crit.
+- Added a max for crits,heals and normal hits so on some bosses you don't get a 1 million crit.
 
 #### Fixed
 
