@@ -12,6 +12,11 @@ local function GetGCD()
   end
 end
 
+local function IsSpellInSpellbook(spellName)
+  local name = GetSpellInfo(spellName)
+  return name ~= nil
+end
+
 local function AddHighestHitsToTooltip(self, slot)
   if (not slot) then
     return
