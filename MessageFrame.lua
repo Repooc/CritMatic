@@ -54,10 +54,7 @@ function CritMatic.ShowNewHealCritMessage(spellName, amount)
   if spellName == "Auto Attack" then
     return
   end
-  if not CritMaticMessageFrame then
-    CritMaticMessageFrame = CritMatic.CreateMessageFrame()
-  end
-
+  
   local message = string.upper(string.format("New %s crit heal: %d!", spellName, amount))
   CritMatic.MessageFrame:CreateMessage(message, 1, 0.84, 0)  -- Gold color
 
