@@ -5,7 +5,7 @@ local activeMessages = {}
 -- Utility function to adjust message positions
 local function AdjustMessagePositions()
   for i, frame in ipairs(activeMessages) do
-    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 250 - (i - 1) * MESSAGE_SPACING)
+    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 350 - (i - 1) * MESSAGE_SPACING)
   end
 end
 
@@ -20,7 +20,7 @@ CritMatic.MessageFrame = {}
 function CritMatic.MessageFrame:CreateMessage(text, r, g, b)
   local f = CreateFrame("Frame", nil, UIParent)
   f:SetSize(750, 30)
-  f:SetPoint("CENTER", UIParent, "CENTER", 0, 320)
+  f:SetPoint("CENTER", UIParent, "CENTER", 0, 350)
   f.text = f:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
   f.text:SetAllPoints()
   f.text:SetText(text)
@@ -43,9 +43,10 @@ function CritMatic.MessageFrame:CreateMessage(text, r, g, b)
   table.insert(activeMessages, f)  -- Add the new message to the end of the list
   AdjustMessagePositions()
 
-  C_Timer.After(8, function()
+  -- If there are more than 4 active messages, remove the oldest one immediately
+  if #activeMessages > 4 then
     RemoveOldestMessage()
-  end)
+  end
 
   return f
 end
@@ -54,7 +55,7 @@ function CritMatic.ShowNewHealCritMessage(spellName, amount)
   if spellName == "Auto Attack" then
     return
   end
-  
+
   local message = string.upper(string.format("New %s crit heal: %d!", spellName, amount))
   CritMatic.MessageFrame:CreateMessage(message, 1, 0.84, 0)  -- Gold color
 
