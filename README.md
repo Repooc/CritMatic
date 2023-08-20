@@ -38,7 +38,7 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 
 #### Fixed
 
-A bug where hit messages disappearing too fast.
+- A bug where hit messages disappearing too fast.
 
 ### [v0.1.2-alpha] - 8/18/2023
 
