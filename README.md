@@ -47,9 +47,4 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 - Added a max for crits,heals and normal hits so on some bosses you don't get a 1 million crit.
 - Added a check to prevent CritMatic from attempting to track spells that are not in your spellbook.
 
-### [v0.1.1-alpha] - 8/14/2023
-
-#### Fixed
-
-- Bug where Killing Spree was not displaying data for the tooltip.
 
