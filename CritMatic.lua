@@ -12,6 +12,15 @@ local function GetGCD()
   end
 end
 
+local function removeImproved(spellName)
+  -- Stripping out "Improved " prefix
+  local baseSpellName = spellName
+  if spellName and string.sub(spellName, 1, 8) == "Improved" then
+    baseSpellName = string.sub(spellName, 10)
+  end
+  return baseSpellName
+end
+
 local function IsSpellInSpellbook(spellName)
   local name = GetSpellInfo(spellName)
   return name ~= nil
@@ -26,26 +35,29 @@ local function AddHighestHitsToTooltip(self, slot)
   if actionType == "spell" then
     local spellName, _, _, castTime = GetSpellInfo(id)
 
-    if CritMaticData[spellName] then
+    local baseSpellName = removeImproved(spellName)
+
+    if CritMaticData[baseSpellName] then
 
       local cooldown = (GetSpellBaseCooldown(id) or 0) / 1000
+      --TODO: if the action is less than the GCD, use the GCD instead
       local effectiveCastTime = castTime > 0 and (castTime / 1000) or GetGCD()
       local effectiveTime = max(effectiveCastTime, cooldown)
 
-      local critHPS = CritMaticData[spellName].highestHealCrit / effectiveTime
-      local normalHPS = CritMaticData[spellName].highestHeal / effectiveTime
-      local critDPS = CritMaticData[spellName].highestCrit / effectiveTime
-      local normalDPS = CritMaticData[spellName].highestNormal / effectiveTime
+      local critHPS = CritMaticData[baseSpellName].highestHealCrit / effectiveTime
+      local normalHPS = CritMaticData[baseSpellName].highestHeal / effectiveTime
+      local critDPS = CritMaticData[baseSpellName].highestCrit / effectiveTime
+      local normalDPS = CritMaticData[baseSpellName].highestNormal / effectiveTime
 
       local CritMaticHealLeft = "Highest Heal Crit: "
-      local CritMaticHealRight = tostring(CritMaticData[spellName].highestHealCrit) .. " (" .. format("%.1f", critHPS) .. " HPS)"
+      local CritMaticHealRight = tostring(CritMaticData[baseSpellName].highestHealCrit) .. " (" .. format("%.1f", critHPS) .. " HPS)"
       local normalMaticHealLeft = "Highest Heal Normal: "
-      local normalMaticHealRight = tostring(CritMaticData[spellName].highestHeal) .. " (" .. format("%.1f", normalHPS) .. " HPS)"
+      local normalMaticHealRight = tostring(CritMaticData[baseSpellName].highestHeal) .. " (" .. format("%.1f", normalHPS) .. " HPS)"
 
       local CritMaticLeft = "Highest Crit: "
-      local CritMaticRight = tostring(CritMaticData[spellName].highestCrit) .. " (" .. format("%.1f", critDPS) .. " DPS)"
+      local CritMaticRight = tostring(CritMaticData[baseSpellName].highestCrit) .. " (" .. format("%.1f", critDPS) .. " DPS)"
       local normalMaticLeft = "Highest Normal: "
-      local normalMaticRight = tostring(CritMaticData[spellName].highestNormal) .. " (" .. format("%.1f", normalDPS) .. " DPS)"
+      local normalMaticRight = tostring(CritMaticData[baseSpellName].highestNormal) .. " (" .. format("%.1f", normalDPS) .. " DPS)"
 
       -- Check if lines are already present in the tooltip.
       local critMaticHealExists = false
@@ -73,7 +85,7 @@ local function AddHighestHitsToTooltip(self, slot)
         end
       end
 
-      if CritMaticData[spellName].highestHeal > 0 or CritMaticData[spellName].highestHealCrit > 0 then
+      if CritMaticData[baseSpellName].highestHeal > 0 or CritMaticData[baseSpellName].highestHealCrit > 0 then
 
         if not critMaticHealExists then
           self:AddDoubleLine(CritMaticHealLeft, CritMaticHealRight)
@@ -88,7 +100,7 @@ local function AddHighestHitsToTooltip(self, slot)
         end
       end
       -- This is a damaging spell
-      if CritMaticData[spellName].highestNormal > 0 or CritMaticData[spellName].highestCrit > 0 then
+      if CritMaticData[baseSpellName].highestNormal > 0 or CritMaticData[baseSpellName].highestCrit > 0 then
         if not critMaticExists then
           self:AddDoubleLine(CritMaticLeft, CritMaticRight)
           _G["GameTooltipTextLeft" .. self:NumLines()]:SetTextColor(1, 1, 1) -- left side color (white)
@@ -129,11 +141,7 @@ f:SetScript("OnEvent", function(self, event, ...)
       amount, overhealing, _, _, _, absorbed, critical = unpack(eventInfo, 15, 21)
     end
 
-    -- Stripping out "Improved " prefix
-    local baseSpellName = spellName
-    if spellName and string.sub(spellName, 1, 8) == "Improved" then
-      baseSpellName = string.sub(spellName, 10)
-    end
+    local baseSpellName = removeImproved(spellName)
 
     if sourceGUID == UnitGUID("player") and destGUID ~= UnitGUID("player") and (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" or eventType == "SPELL_PERIODIC_DAMAGE") and amount > 0 then
       if baseSpellName then
