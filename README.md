@@ -1,6 +1,6 @@
 # WOTLK Classic 3.4.2
 
-## CritMatic v0.1.2-alpha - Your Personal Damage and Heal Tracker
+## CritMatic v0.1.3-alpha - Your Personal Damage and Heal Tracker
 
 CritMatic is a lightweight World of Warcraft addon designed to help players keep track of their highest critical and
 normal hits (both damage and heal).
