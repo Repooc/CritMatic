@@ -30,8 +30,15 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 ## Planned:
 
 - Configuration options for more fonts, colors and animations and more.
+- Adding the tooltip information to the spellbook.
 
 ## Change Log:
+
+### [v0.1.3-alpha] - 8/20/2023
+
+#### Fixed
+
+A bug where hit messages disappearing too fast.
 
 ### [v0.1.2-alpha] - 8/18/2023
 
