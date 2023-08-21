@@ -30,7 +30,9 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 ## Planned:
 
 - Configuration options for more fonts, colors and animations and more.
-- Adding the tooltip information to the spellbook.
+- Adding the tooltip information to the spell-book.
+- Chat Messages are gold for crits.
+-
 
 ## Change Log:
 
