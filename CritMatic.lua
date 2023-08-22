@@ -26,14 +26,22 @@ local function IsSpellInSpellbook(spellName)
   return name ~= nil
 end
 
-local function AddHighestHitsToTooltip(self, slot)
+local function AddHighestHitsToTooltip(self, slot, isSpellBook)
   if (not slot) then
     return
   end
-
-  local actionType, id = GetActionInfo(slot)
+  local actionType, id, spellName, castTime
+  if isSpellBook then
+    -- Handle spellbook item
+    spellName = GetSpellBookItemName(slot, BOOKTYPE_SPELL)
+    id, _, _, castTime = GetSpellInfo(spellName)
+    actionType = "spell"
+  else
+    -- Handle action bar item
+    actionType, id = GetActionInfo(slot)
+    spellName, _, _, castTime = GetSpellInfo(id)
+  end
   if actionType == "spell" then
-    local spellName, _, _, castTime = GetSpellInfo(id)
 
     local baseSpellName = removeImproved(spellName)
 
@@ -48,11 +56,6 @@ local function AddHighestHitsToTooltip(self, slot)
       local normalHPS = CritMaticData[baseSpellName].highestHeal / effectiveTime
       local critDPS = CritMaticData[baseSpellName].highestCrit / effectiveTime
       local normalDPS = CritMaticData[baseSpellName].highestNormal / effectiveTime
-
-      CritMaticData[baseSpellName].critHPS = critHPS
-      CritMaticData[baseSpellName].normalHPS = normalHPS
-      CritMaticData[baseSpellName].critDPS = critDPS
-      CritMaticData[baseSpellName].normalDPS = normalDPS
 
       local CritMaticHealLeft = "Highest Heal Crit: "
       local CritMaticHealRight = tostring(CritMaticData[baseSpellName].highestHealCrit) .. " (" .. format("%.1f", critHPS) .. " HPS)"
@@ -153,12 +156,8 @@ f:SetScript("OnEvent", function(self, event, ...)
         CritMaticData[baseSpellName] = CritMaticData[baseSpellName] or {
           highestCrit = 0,
           highestNormal = 0,
-          critDPS = 0,
-          normalDPS = 0,
           highestHealCrit = 0,
           highestHeal = 0,
-          critHPS = 0,
-          normalHPS = 0,
           spellIcon = GetSpellTexture(spellID)
         }
         if IsSpellInSpellbook(baseSpellName) then
@@ -227,15 +226,9 @@ local function OnLoad(self, event, addonName)
 
     -- Add the highest hits data to the spell button tooltip.
     hooksecurefunc(GameTooltip, "SetAction", AddHighestHitsToTooltip)
-    local function AddCritMaticHook(self, spellBookID, bookType)
-      local slotType, _ = GetSpellBookItemInfo(spellBookID, bookType)
-      if slotType == "SPELL" then
-        self:AddLine("CritMatic Hook Test") -- Adding a static test line
-        self:Show() -- Make sure to show the tooltip
-      end
-    end
+
     local GameTooltip = IsAddOnLoaded("ElvUI") and _G.ElvUISpellBookTooltip or _G.GameTooltip
-    hooksecurefunc(GameTooltip, "SetSpellBookItem", AddCritMaticHook)
+    hooksecurefunc(GameTooltip, "SetSpellBookItem", AddHighestHitsToTooltip)
   end
 end
 local frame = CreateFrame("FRAME")
