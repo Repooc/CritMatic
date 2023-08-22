@@ -5,6 +5,7 @@
 ## Notes: Records and displays the highest critical hits and Normals for the player.
 ## DefaultState: enabled
 ## SavedVariablesPerCharacter: CritMaticData
+## OptionalDeps: ElvUI
 
 Namespace.lua
 MessageFrame.lua
