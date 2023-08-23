@@ -30,7 +30,7 @@ end
 
 CritMatic.MessageFrame = {}
 
-function CritMatic.MessageFrame:CreateMessage(text, r, g, b)
+function CritMatic.MessageFrame:CreateMessage(text, r, g, b, isCrit)
   local f = CreateFrame("Frame", nil, UIParent)
   f:SetSize(750, 30)
   f:SetPoint("CENTER", UIParent, "CENTER", 0, 350)
@@ -41,6 +41,36 @@ function CritMatic.MessageFrame:CreateMessage(text, r, g, b)
   f.text:SetFont(fontPath, 20, "THICKOUTLINE")
   f.text:SetShadowOffset(3, -3)
 
+  if isCrit then
+    f.bounce = f:CreateAnimationGroup()
+
+    -- Translate up and scale up
+    local translateUp = f.bounce:CreateAnimation("Translation")
+    translateUp:SetOffset(0, 30) -- Move up by 30 pixels
+    translateUp:SetDuration(0.1) -- Duration of the translate-up phase
+    translateUp:SetOrder(1) -- First phase
+
+    local scaleUp = f.bounce:CreateAnimation("Scale")
+    scaleUp:SetScale(1.5, 1.5) -- Scale up by 20%
+    scaleUp:SetDuration(0.15) -- Duration of the scale-up phase
+    scaleUp:SetOrder(1) -- First phase (same as translateUp)
+
+    local pause = f.bounce:CreateAnimation("Pause")
+    pause:SetDuration(0.3) -- Duration of the pause
+    pause:SetOrder(2) -- Second phase
+
+    local translateDown = f.bounce:CreateAnimation("Translation")
+    translateDown:SetOffset(0, -30) -- Move back down by 30 pixels
+    translateDown:SetDuration(0.1) -- Duration of the translate-down phase
+    translateDown:SetOrder(3) -- Third phase
+
+    local scaleDown = f.bounce:CreateAnimation("Scale")
+    scaleDown:SetScale(1 / 1.5, 1 / 1.5) -- Scale down to original size
+    scaleDown:SetDuration(0.15) -- Duration of the scale-down phase
+    scaleDown:SetOrder(3) -- Third phase (same as translateDown)
+
+    f.bounce:Play()
+  end
   -- Fade out and hide animation
   f.fadeOut = f:CreateAnimationGroup()
   local fade = f.fadeOut:CreateAnimation("Alpha")
@@ -71,7 +101,7 @@ function CritMatic.ShowNewHealCritMessage(spellName, amount)
   end
 
   local message = string.upper(string.format("New %s crit heal: %d!", spellName, amount))
-  CritMatic.MessageFrame:CreateMessage(message, 1, 0.84, 0)  -- Gold color
+  CritMatic.MessageFrame:CreateMessage(message, 1, 0.84, 0, true)  -- Gold color
 
 end
 
@@ -81,7 +111,7 @@ function CritMatic.ShowNewHealMessage(spellName, amount)
   end
 
   local message = string.upper(string.format("New %s normal heal record: %d!", spellName, amount))
-  CritMatic.MessageFrame:CreateMessage(message, 1, 1, 1)  -- White color
+  CritMatic.MessageFrame:CreateMessage(message, 1, 1, 1, false)  -- White color
 
 end
 
@@ -91,7 +121,7 @@ function CritMatic.ShowNewCritMessage(spellName, amount)
   end
 
   local message = string.upper(string.format("New %s crit: %d!", spellName, amount))
-  CritMatic.MessageFrame:CreateMessage(message, 1, 0.84, 0)  -- Gold color
+  CritMatic.MessageFrame:CreateMessage(message, 1, 0.84, 0, true)  -- Gold color
 end
 
 function CritMatic.ShowNewNormalMessage(spellName, amount)
@@ -100,7 +130,7 @@ function CritMatic.ShowNewNormalMessage(spellName, amount)
   end
 
   local message = string.upper(string.format("New %s normal hit record: %d!", spellName, amount))
-  CritMatic.MessageFrame:CreateMessage(message, 1, 1, 1)  -- White color
+  CritMatic.MessageFrame:CreateMessage(message, 1, 1, 1, false)  -- White color
 
 end
 
