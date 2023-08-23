@@ -1,6 +1,6 @@
 # WOTLK Classic 3.4.2
 
-## CritMatic v0.1.3-alpha - Your Personal Damage and Heal Tracker
+## CritMatic v0.1.4-alpha - Your Personal Damage and Heal Tracker
 
 CritMatic is a lightweight World of Warcraft addon designed to help players keep track of their highest critical and
 normal hits (both damage and heal).
@@ -29,12 +29,17 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 
 ## Planned:
 
-- Configuration options for more fonts, colors and animations and more.
-- Adding the tooltip information to the spell-book.
+- Configuration options for more fonts, colors and more.
 - Chat Messages are gold for crits.
--
 
 ## Change Log:
+
+### [v0.1.4-alpha] - 8/23/2023
+
+#### Added
+
+- Added new Crit animation for crits.
+- Added CritMatic tooltip information to the spell-book.
 
 ### [v0.1.3-alpha] - 8/20/2023
 
@@ -46,7 +51,7 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 
 #### Added
 
-- Added a max for crits,heals and normal hits so on some bosses you don't get a 1 million crit.
-- Added a check to prevent CritMatic from attempting to track spells that are not in your spellbook.
+- Added a max for crits,heals and normal hits so on some bosses you don't get a 1 million crits.
+- Added a check to prevent CritMatic from attempting to track spells that are not in your spell-book.
 
 
