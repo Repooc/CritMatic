@@ -1,18 +1,31 @@
 local fontPath = "Interface\\AddOns\\CritMatic\\fonts\\8bit.ttf"
-local MESSAGE_SPACING = 30  -- Spacing between messages
+local MESSAGE_SPACING = 3
+local MAX_MESSAGES = 4
 local activeMessages = {}
+--/run CritMatic.ShowNewCritMessage("Killing Spree", 300)CritMatic.ShowNewNormalMessage("Killing Spree",435)
 
 -- Utility function to adjust message positions
 local function AdjustMessagePositions()
-  for i, frame in ipairs(activeMessages) do
-    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 350 - (i - 1) * MESSAGE_SPACING)
+  -- Position the first message at the top
+  activeMessages[1]:SetPoint("CENTER", UIParent, "CENTER", 0, 350)
+
+  -- Position subsequent messages relative to the previous one
+  for i = 2, #activeMessages do
+    activeMessages[i]:SetPoint("TOP", activeMessages[i - 1], "BOTTOM", 0, -MESSAGE_SPACING)
   end
 end
 
+
+
 -- Utility function to remove the oldest message and adjust the rest
 local function RemoveOldestMessage()
-  local oldestMessage = table.remove(activeMessages, 1)  -- Remove the oldest message (first in the table)
-  AdjustMessagePositions()
+  local oldestMessage = table.remove(activeMessages)  -- Remove the oldest message (first in the table)
+
+  -- Hide the message frame and perform any necessary cleanup
+  if oldestMessage then
+    oldestMessage:Hide()
+    -- Any additional cleanup logic, if needed
+  end
 end
 
 CritMatic.MessageFrame = {}
@@ -40,11 +53,12 @@ function CritMatic.MessageFrame:CreateMessage(text, r, g, b)
   end)
   f.fadeOut:Play()
 
-  table.insert(activeMessages, f)  -- Add the new message to the end of the list
+  table.insert(activeMessages, 1, f) -- Insert the new message at the beginning
+
   AdjustMessagePositions()
 
-  -- If there are more than 4 active messages, remove the oldest one immediately
-  if #activeMessages > 4 then
+  -- If there are more than the maximum number of active messages, remove the oldest one
+  if #activeMessages > MAX_MESSAGES then
     RemoveOldestMessage()
   end
 
