@@ -31,58 +31,64 @@ end
 CritMatic.MessageFrame = {}
 
 function CritMatic.MessageFrame:CreateMessage(text, r, g, b)
-  local f = CreateFrame("Frame", nil, UIParent)
-  f:SetSize(750, 30)
-  f:SetPoint("CENTER", UIParent, "CENTER", 0, 350)
-  f.text = f:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
-  f.text:SetAllPoints()
-  f.text:SetText(text)
-  f.text:SetTextColor(r, g, b)
-  f.text:SetFont(fontPath, 20, "THICKOUTLINE")
-  f.text:SetShadowOffset(3, -3)
+  local delayInSeconds = 0.2
 
-  f.bounce = f:CreateAnimationGroup()
+  local function delayedExecution()
+    local f = CreateFrame("Frame", nil, UIParent)
+    f:SetSize(750, 30)
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 350)
+    f.text = f:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge")
+    f.text:SetAllPoints()
+    f.text:SetText(text)
+    f.text:SetTextColor(r, g, b)
+    f.text:SetFont(fontPath, 20, "THICKOUTLINE")
+    f.text:SetShadowOffset(3, -3)
 
-  -- Scale up
-  local scaleUp = f.bounce:CreateAnimation("Scale")
-  scaleUp:SetScale(1.5, 1.5) -- Scale up by 50%
-  scaleUp:SetDuration(0.15) -- Duration of the scale-up phase
-  scaleUp:SetOrder(1) -- First phase
+    f.bounce = f:CreateAnimationGroup()
 
-  local pause = f.bounce:CreateAnimation("Pause")
-  pause:SetDuration(0.12) -- Duration of the pause
-  pause:SetOrder(2) -- Second phase
+    -- Scale up
+    local scaleUp = f.bounce:CreateAnimation("Scale")
+    scaleUp:SetScale(1.5, 1.5) -- Scale up by 50%
+    scaleUp:SetDuration(0.15) -- Duration of the scale-up phase
+    scaleUp:SetOrder(1) -- First phase
 
-  -- Scale down to original size
-  local scaleDown = f.bounce:CreateAnimation("Scale")
-  scaleDown:SetScale(1 / 1.5, 1 / 1.5)
-  scaleDown:SetDuration(0.15) -- Duration of the scale-down phase
-  scaleDown:SetOrder(3) -- Third phase
+    local pause = f.bounce:CreateAnimation("Pause")
+    pause:SetDuration(0.12) -- Duration of the pause
+    pause:SetOrder(2) -- Second phase
 
-  f.bounce:Play()
+    -- Scale down to original size
+    local scaleDown = f.bounce:CreateAnimation("Scale")
+    scaleDown:SetScale(1 / 1.5, 1 / 1.5)
+    scaleDown:SetDuration(0.15) -- Duration of the scale-down phase
+    scaleDown:SetOrder(3) -- Third phase
 
-  -- Fade out and hide animation
-  f.fadeOut = f:CreateAnimationGroup()
-  local fade = f.fadeOut:CreateAnimation("Alpha")
-  fade:SetFromAlpha(1)
-  fade:SetToAlpha(0)
-  fade:SetDuration(0.5)
-  fade:SetStartDelay(7.5)
-  f.fadeOut:SetScript("OnFinished", function()
-    f:Hide()
-  end)
-  f.fadeOut:Play()
+    f.bounce:Play()
 
-  table.insert(activeMessages, 1, f) -- Insert the new message at the beginning
+    -- Fade out and hide animation
+    f.fadeOut = f:CreateAnimationGroup()
+    local fade = f.fadeOut:CreateAnimation("Alpha")
+    fade:SetFromAlpha(1)
+    fade:SetToAlpha(0)
+    fade:SetDuration(0.5)
+    fade:SetStartDelay(7.5)
+    f.fadeOut:SetScript("OnFinished", function()
+      f:Hide()
+    end)
+    f.fadeOut:Play()
 
-  AdjustMessagePositions()
+    table.insert(activeMessages, 1, f) -- Insert the new message at the beginning
 
-  -- If there are more than the maximum number of active messages, remove the oldest one
-  if #activeMessages > MAX_MESSAGES then
-    RemoveOldestMessage()
+    AdjustMessagePositions()
+
+    -- If there are more than the maximum number of active messages, remove the oldest one
+    if #activeMessages > MAX_MESSAGES then
+      RemoveOldestMessage()
+    end
+
+    return f
   end
-
-  return f
+  -- Delay the execution using C_Timer
+  C_Timer.After(delayInSeconds, delayedExecution)
 end
 
 function CritMatic.ShowNewHealCritMessage(spellName, amount)
