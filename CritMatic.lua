@@ -1,7 +1,7 @@
 -- Define a table to hold the highest hits data.
 CritMaticData = CritMaticData or {}
 
-local MAX_HIT = 10000
+local MAX_HIT = 20000
 
 local function GetGCD()
   local _, gcdDuration = GetSpellCooldown(78) -- 78 is the spell ID for Warrior's Heroic Strike
