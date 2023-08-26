@@ -1,6 +1,6 @@
 # WOTLK Classic 3.4.2
 
-## CritMatic v0.1.4-alpha - Your Personal Damage and Heal Tracker
+## CritMatic v0.1.5-alpha - Your Personal Damage and Heal Tracker
 
 CritMatic is a lightweight World of Warcraft addon designed to help players keep track of their highest critical and
 normal hits (both damage and heal).
@@ -8,7 +8,8 @@ normal hits (both damage and heal).
 ### Key Features:
 
 - **Real-time Tracking:** CritMatic monitors your combat logs in real-time and records your highest critical and normal
-  hits for each spell you cast. It automatically updates these records when you hit harder.
+  hits for each spell you cast. It automatically updates these records when you hit harder. (Some spells require a party
+  I think because of game optimization)
 
 - **Healing Tracking:** In addition to damage, CritMatic also tracks your healing output, recording the highest heal and
   critical heal for each healing spell you cast.
@@ -16,7 +17,8 @@ normal hits (both damage and heal).
 - **Detailed Tooltip Information:** When you mouse over a spell on your action bar, CritMatic adds additional lines to
   the tooltip showing your highest normal and critical hit with that spell.
 
-- **Display Damage and Heals:** CritMatic will notify you with a message and sound effect whenever you hit a new highest
+- **Display Damage and Heals notification:** CritMatic will notify you with a message and sound effect whenever you hit
+  a new highest
   normal or critical hit.
 
 - **Persistent Data:** CritMatic saves your highest hits data between sessions, so you can log out or switch characters
@@ -31,8 +33,22 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 
 - Configuration options for more fonts, colors and more.
 - Chat Messages are gold for crits.
+- Crit log by level and ability.
+- Customizing the Crit/Normal/Heal notification message and sounds.
+
+## Known Issues:
+
+- Warlocks Healthstones don't display in the tooltip or message.
+- pets are not currently tracked in the tooltip or message.
+- Some spells like Killing Spree / Starfall show reaaly low dps because of the way the game handles them.
 
 ## Change Log:
+
+### [v0.1.5-alpha] - 8/23/2023
+
+#### Added
+
+- Added Support for Classic Era / Hardcore.
 
 ### [v0.1.4-alpha] - 8/23/2023
 
