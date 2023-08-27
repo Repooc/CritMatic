@@ -51,8 +51,13 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 - Some spells like Killing Spree / Starfall show reaaly low dps because of the way the game handles them.
 
 ## Change Log:
+### [v0.1.54-alpha] - 8/27/2023
 
-### [v0.1.5-alpha] - 8/23/2023
+#### Fixed
+
+- Bug Hot-Fix Because the Heroism sound was not in classic so has to import it.
+
+### [v0.1.5-alpha] - 8/26/2023
 
 #### Added
 
