@@ -5,12 +5,16 @@
 CritMatic is a lightweight World of Warcraft addon designed to help players keep track of their highest critical and
 normal hits (both damage and heal).
 
+### NOTE:
+
+#### Some spells require a party to track the spell. because of wow.exe game optimization
+
+#### There is a Short Calibration Period were you will see allot of notifications. You will see less and less Crit/Normal/Heal messages.
+
 ### Key Features:
 
 - **Real-time Tracking:** CritMatic monitors your combat logs in real-time and records your highest critical and normal
-  hits for each spell you cast. It automatically updates these records when you hit harder. (Some spells require a party
-  I think because of game optimization)
-
+  hits for each spell you cast. It automatically updates these records when you hit harder.
 - **Healing Tracking:** In addition to damage, CritMatic also tracks your healing output, recording the highest heal and
   critical heal for each healing spell you cast.
 
@@ -33,8 +37,12 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 
 - Configuration options for more fonts, colors and more.
 - Chat Messages are gold for crits.
-- Crit log by level and ability.
+- Crit-log by level and ability.
 - Customizing the Crit/Normal/Heal notification message and sounds.
+- Option to disable the Crit/Normal/Heal notification message and sounds.
+- Option to disable the CritMatic tooltip information.
+- option to move the CritMatic Crit/Normal/Heal notification message.
+- GUI Interface for configuration.
 
 ## Known Issues:
 
@@ -49,6 +57,7 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 #### Added
 
 - Added Support for Classic Era / Hardcore.
+- Updated the Notification Animation.
 
 ### [v0.1.4-alpha] - 8/23/2023
 

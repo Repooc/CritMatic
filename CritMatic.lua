@@ -1,7 +1,7 @@
 -- Define a table to hold the highest hits data.
 CritMaticData = CritMaticData or {}
 
-local MAX_HIT = 20000
+local MAX_HIT = 40000
 
 local function GetGCD()
   local _, gcdDuration = GetSpellCooldown(78) -- 78 is the spell ID for Warrior's Heroic Strike
@@ -181,7 +181,7 @@ f:SetScript("OnEvent", function(self, event, ...)
               end
               if amount > CritMaticData[baseSpellName].highestHeal and amount <= MAX_HIT then
                 CritMaticData[baseSpellName].highestHeal = amount
-                PlaySound(10049, "SFX")
+                PlaySoundFile("Interface\\AddOns\\CritMatic\\Sounds\\Heroism_Cast.ogg", "SFX")
                 CritMatic.ShowNewHealMessage(baseSpellName, amount)
                 print("New highest normal heal for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestHeal)
               end
@@ -205,7 +205,7 @@ f:SetScript("OnEvent", function(self, event, ...)
               end
               if amount > CritMaticData[baseSpellName].highestNormal and amount <= MAX_HIT then
                 CritMaticData[baseSpellName].highestNormal = amount
-                PlaySound(10049, "SFX")
+                PlaySoundFile("Interface\\AddOns\\CritMatic\\Sounds\\Heroism_Cast.ogg", "SFX")
                 CritMatic.ShowNewNormalMessage(baseSpellName, amount)
                 print("New highest normal hit for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestNormal)
               end
