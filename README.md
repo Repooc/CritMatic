@@ -55,7 +55,7 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 
 #### Fixed
 
-- Bug Hot-Fix Because the Heroism sound was not in classic so has to import it.
+- Bug Hot-Fix Because the Heroism sound was not in classic so I had to import it.
 
 ### [v0.1.5-alpha] - 8/26/2023
 
