@@ -1,4 +1,4 @@
-# WOTLK Classic 3.4.2
+# WOTLK Classic 3.4.2 and Classic / Hardcore
 
 ## CritMatic v0.1.5-alpha - Your Personal Damage and Heal Tracker
 
