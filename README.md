@@ -1,6 +1,6 @@
 # WOTLK Classic 3.4.2 and Classic / Hardcore
 
-## CritMatic v0.1.5-alpha - Your Personal Damage and Heal Tracker
+## CritMatic v0.1.56-alpha - Your Personal Damage and Heal Tracker
 
 CritMatic is a lightweight World of Warcraft addon designed to help players keep track of their highest critical and
 normal hits (both damage and heal).
@@ -51,11 +51,21 @@ With CritMatic you'll always know when you've hit a new personal best. Happy Cri
 - Some spells like Killing Spree / Starfall show reaaly low dps because of the way the game handles them.
 
 ## Change Log:
-### [v0.1.54-alpha] - 8/27/2023
 
-#### Fixed
+### [v0.1.56-release] - 8/28/2023
 
-- Bug Hot-Fix Because the Heroism sound was not in classic so I had to import it.
+#### Added
+
+- Added A new Heal Sound SFX for Normal Heals.
+
+### [v0.1.55-release] - 8/27/2023
+
+Fixed A bug where there was no sound for normal hit/heals
+
+#### Added
+
+- Added Support for Classic Era / Hardcore.
+- Updated Notification Animation.
 
 ### [v0.1.5-alpha] - 8/26/2023
 

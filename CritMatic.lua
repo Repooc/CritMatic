@@ -181,7 +181,7 @@ f:SetScript("OnEvent", function(self, event, ...)
               end
               if amount > CritMaticData[baseSpellName].highestHeal and amount <= MAX_HIT then
                 CritMaticData[baseSpellName].highestHeal = amount
-                PlaySoundFile("Interface\\AddOns\\CritMatic\\Sounds\\Heroism_Cast.ogg", "SFX")
+                PlaySoundFile("Interface\\AddOns\\CritMatic\\Sounds\\Heaven.ogg", "SFX")
                 CritMatic.ShowNewHealMessage(baseSpellName, amount)
                 print("New highest normal heal for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestHeal)
               end
