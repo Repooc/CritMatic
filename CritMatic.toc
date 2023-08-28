@@ -12,5 +12,3 @@
 Namespace.lua
 MessageFrame.lua
 CritMatic.lua
-Fonts/8Bit.ttf
-Embeds.xml

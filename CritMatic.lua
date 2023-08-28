@@ -135,8 +135,8 @@ f:SetScript("OnEvent", function(self, event, ...)
   if event == "COMBAT_LOG_EVENT_UNFILTERED" then
     local eventInfo = { CombatLogGetCurrentEventInfo() }
 
-    local timestamp, eventType, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = unpack(eventInfo, 1, 11)
-    local spellID, spellName, spellSchool, amount, overhealing, absorbed, critical
+    local _, eventType, _, sourceGUID, _, _, _, destGUID = unpack(eventInfo)
+    local _, spellID, spellName, spellSchool, amount, overhealing, absorbed, critical
     if eventType == "SWING_DAMAGE" then
       spellName = "Auto Attack"
       spellID = 6603 -- or specify the path to a melee icon, if you have one
@@ -150,6 +150,10 @@ f:SetScript("OnEvent", function(self, event, ...)
     end
 
     local baseSpellName = removeImproved(spellName)
+
+    if baseSpellName == "Auto Attack" then
+      return
+    end
 
     if sourceGUID == UnitGUID("player") or sourceGUID == UnitGUID("pet") and destGUID ~= UnitGUID("player") and (eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" or eventType == "SPELL_PERIODIC_DAMAGE") and amount > 0 then
       if baseSpellName then
@@ -165,9 +169,7 @@ f:SetScript("OnEvent", function(self, event, ...)
 
           if eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" then
             if critical then
-              if baseSpellName == "Auto Attack" then
-                return
-              end
+
               -- When the event is a heal and it's a critical heal.
               if amount > CritMaticData[baseSpellName].highestHealCrit and amount <= MAX_HIT then
                 CritMaticData[baseSpellName].highestHealCrit = amount
@@ -176,9 +178,6 @@ f:SetScript("OnEvent", function(self, event, ...)
                 print("New highest crit heal for " .. baseSpellName .. ": " .. CritMaticData[baseSpellName].highestHealCrit)
               end
             elseif not critical then
-              if baseSpellName == "Auto Attack" then
-                return
-              end
               if amount > CritMaticData[baseSpellName].highestHeal and amount <= MAX_HIT then
                 CritMaticData[baseSpellName].highestHeal = amount
                 PlaySoundFile("Interface\\AddOns\\CritMatic\\Sounds\\Heaven.ogg", "SFX")
@@ -189,9 +188,6 @@ f:SetScript("OnEvent", function(self, event, ...)
           elseif eventType == "SPELL_DAMAGE" or eventType == "SWING_DAMAGE" or eventType == "SPELL_PERIODIC_DAMAGE" then
             if critical then
               -- When the event is damage and it's a critical hit.
-              if baseSpellName == "Auto Attack" then
-                return
-              end
               if amount > CritMaticData[baseSpellName].highestCrit and amount <= MAX_HIT then
                 CritMaticData[baseSpellName].highestCrit = amount
                 PlaySound(888, "SFX")
@@ -200,9 +196,6 @@ f:SetScript("OnEvent", function(self, event, ...)
               end
             elseif not critical then
               -- When the event is damage but it's not a critical hit.
-              if baseSpellName == "Auto Attack" then
-                return
-              end
               if amount > CritMaticData[baseSpellName].highestNormal and amount <= MAX_HIT then
                 CritMaticData[baseSpellName].highestNormal = amount
                 PlaySoundFile("Interface\\AddOns\\CritMatic\\Sounds\\Heroism_Cast.ogg", "SFX")
@@ -231,18 +224,10 @@ local function OnLoad(self, event, addonName)
     hooksecurefunc(GameTooltip, "SetSpellBookItem", AddHighestHitsToTooltip)
   end
 end
+
 local frame = CreateFrame("FRAME")
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", OnLoad)
-
--- Register an event that fires when the player logs out or exits the game.
-local function OnSave(self, event)
-  -- Save the highest hits data to the saved variables for the addon.
-  _G["CritMaticData"] = CritMaticData
-end
-local frame = CreateFrame("FRAME")
-frame:RegisterEvent("PLAYER_LOGOUT")
-frame:SetScript("OnEvent", OnSave)
 
 local function ResetData()
   CritMaticData = {}
