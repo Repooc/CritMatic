@@ -21,11 +21,6 @@ local function removeImproved(spellName)
   return baseSpellName
 end
 
-local function IsSpellInSpellbook(spellName)
-  local name = GetSpellInfo(spellName)
-  return name ~= nil
-end
-
 local function AddHighestHitsToTooltip(self, slot, isSpellBook)
   if (not slot) then
     return
@@ -164,7 +159,7 @@ f:SetScript("OnEvent", function(self, event, ...)
           highestHeal = 0,
           spellIcon = GetSpellTexture(spellID)
         }
-        if IsSpellInSpellbook(baseSpellName) then
+        if IsSpellKnown(spellID) then
           --print(CombatLogGetCurrentEventInfo())
 
           if eventType == "SPELL_HEAL" or eventType == "SPELL_PERIODIC_HEAL" then
